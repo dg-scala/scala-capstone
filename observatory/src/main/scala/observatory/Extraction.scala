@@ -2,6 +2,8 @@ package observatory
 
 import java.time.LocalDate
 
+import org.apache.spark.rdd.RDD
+
 import scala.tools.nsc.interpreter.InputStream
 
 /**
@@ -18,8 +20,8 @@ object Extraction {
   def locateTemperatures(year: Int, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Double)] = {
     val stations = getClass.getClassLoader.getResourceAsStream(stationsFile)
     val temperatures = getClass.getClassLoader.getResourceAsStream(temperaturesFile)
-
-    loadTemperaturesFromStreams(stations, temperatures)
+//    if (stations == null || temperatures == null)
+    Iterable.empty[(LocalDate, Location, Double)]
   }
 
   /**
@@ -28,13 +30,6 @@ object Extraction {
     */
   def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Double)]): Iterable[(Location, Double)] = {
     ???
-  }
-
-  def loadTemperaturesFromStreams(stations: InputStream, temperatures: InputStream): Iterable[(LocalDate, Location, Double)] = {
-    if (stations == null || temperatures == null)
-      Iterable.empty[(LocalDate, Location, Double)]
-    else
-      throw new Error("Not implemented")
   }
 
 }

@@ -23,7 +23,6 @@ class ExtractionTest extends FunSuite {
   }
 
   test("empty sequence returned for temperatures with no location coordinates") {
-    val actual = loadTemperaturesFromStreams(stations, temps)
-    assert(actual == Iterable.empty[(LocalDate, Location, Double)], "empty sequence expected for temperatures without locations"))
+    fail()
   }
 }
