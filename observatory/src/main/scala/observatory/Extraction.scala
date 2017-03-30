@@ -39,7 +39,18 @@ object Extraction {
       val statRdd = stations(sc.textFile(fsPath(stationsURL)))
       val tempRdd = temperatures(sc.textFile(fsPath(temperaturesURL)))
 
-      ???
+      statRdd.join(tempRdd)
+        .mapValues(value => {
+          val station: Station = value._1
+          val tempRecords: Iterable[TemperatureRecord] = value._2
+
+          val location = Location(station.latitude, station.longitude)
+          tempRecords.map(tempRecord =>
+            (new LocalDate(year, tempRecord.month, tempRecord.day), location, celsius(tempRecord.fahrenheit))
+          )
+        })
+        .values
+        .fold(Iterable.empty[(LocalDate, Location, Double)])((acc, vs) => acc ++ vs)
     }
 
   }
@@ -52,9 +63,11 @@ object Extraction {
     ???
   }
 
+  def celsius(fahrenheit: Double): Double = (fahrenheit - 32.0) * 5 / 9
+
   def fsPath(pathURL: URL): String = Paths.get(pathURL.toURI).toString
 
-  def stations(rawStations: RDD[String]): RDD[(StationID, Iterable[Station])] = {
+  def stations(rawStations: RDD[String]): RDD[(StationID, Station)] = {
     def invalidStation(record: Array[String]) = {
       val (stn, wban, lat, long) = (record(0), record(1), record(2), record(3))
       (stn.isEmpty && wban.isEmpty) || lat.isEmpty || long.isEmpty
@@ -65,6 +78,8 @@ object Extraction {
       .filter(stationRecord => !invalidStation(stationRecord))
       .map(s => Station((s(0), s(1)), s(2).toDouble, s(3).toDouble))
       .groupBy(_.stationId)
+      .mapValues(_.head)
+      .cache()
   }
 
   def temperatures(rawTemperatures: RDD[String]): RDD[(StationID, Iterable[TemperatureRecord])] =
@@ -74,5 +89,6 @@ object Extraction {
         TemperatureRecord((t(0), t(1)), t(2).toInt, t(3).toInt, t(4).toDouble)
       })
       .groupBy(_.stationId)
+      .cache()
 
 }
