@@ -30,6 +30,7 @@ object Extraction {
     * @return A sequence containing triplets (date, location, temperature)
     */
   def locateTemperatures(year: Int, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Double)] = {
+
     val stationsURL = getClass.getClassLoader.getResource(stationsFile)
     val temperaturesURL = getClass.getClassLoader.getResource(temperaturesFile)
 
@@ -50,18 +51,18 @@ object Extraction {
           )
         })
         .values
-        .fold(Iterable.empty[(LocalDate, Location, Double)])((acc, vs) => acc ++ vs)
+        .reduce((vs1, vs2) => vs1 ++ vs2)
     }
-
   }
 
   /**
     * @param records A sequence containing triplets (date, location, temperature)
     * @return A sequence containing, for each location, the average temperature over the year.
     */
-  def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Double)]): Iterable[(Location, Double)] = {
-    ???
-  }
+  def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Double)]): Iterable[(Location, Double)] =
+    records
+      .groupBy(_._2)
+      .mapValues(records => records.foldRight(0.0)((rec, sum) => sum + rec._3) / records.size)
 
   def celsius(fahrenheit: Double): Double = (fahrenheit - 32.0) * 5 / 9
 
