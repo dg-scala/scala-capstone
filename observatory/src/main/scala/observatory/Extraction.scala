@@ -6,8 +6,7 @@ import java.time.LocalDate
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
-import sun.jvm.hotspot.opto.CallStaticJavaNode
-
+  
 /**
   * 1st milestone: data extraction
   */
