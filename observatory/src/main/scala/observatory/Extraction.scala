@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
-  
+
 /**
   * 1st milestone: data extraction
   */
