@@ -6,6 +6,7 @@ import java.time.LocalDate
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
+import org.apache.spark.storage.StorageLevel
 
 /**
   * 1st milestone: data extraction
@@ -63,10 +64,15 @@ object Extraction {
     * @param records A sequence containing triplets (date, location, temperature)
     * @return A sequence containing, for each location, the average temperature over the year.
     */
-  def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Double)]): Iterable[(Location, Double)] =
-    records
+  def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Double)]): Iterable[(Location, Double)] = {
+    val recordsRdd = sc.parallelize(records.toSeq)
+
+    recordsRdd
       .groupBy(_._2)
       .mapValues(records => records.foldRight(0.0)((rec, sum) => sum + rec._3) / records.size)
+      .collect
+      .toIterable
+  }
 
   def celsius(fahrenheit: Double): Double = (fahrenheit - 32.0) * 5 / 9
 
@@ -88,7 +94,7 @@ object Extraction {
       .map(s => Station((s(0), s(1)), s(2).toDouble, s(3).toDouble))
       .groupBy(_.stationId)
       .mapValues(_.head)
-      .cache()
+      .persist(StorageLevel.MEMORY_AND_DISK)
   }
 
   def temperatures(rawTemperatures: RDD[String]): RDD[(StationID, Iterable[TemperatureRecord])] = {
@@ -100,6 +106,6 @@ object Extraction {
       .filter(tempRecord => !invalidTemperatureRecord(tempRecord))
       .map(t => TemperatureRecord((t(0), t(1)), t(2).toInt, t(3).toInt, t(4).toDouble))
       .groupBy(_.stationId)
-      .cache()
+      .persist(StorageLevel.MEMORY_AND_DISK)
   }
 }
