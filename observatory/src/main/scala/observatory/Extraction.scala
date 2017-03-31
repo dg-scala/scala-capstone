@@ -99,7 +99,7 @@ object Extraction {
 
   def temperatures(rawTemperatures: RDD[String]): RDD[(StationID, Iterable[TemperatureRecord])] = {
 
-    def invalidTemperatureRecord(record: Array[String]) = record.length != 5
+    def invalidTemperatureRecord(record: Array[String]) = record.length != 5 || record(4) == "9999.9"
 
     rawTemperatures
       .map(line => line.split(","))
