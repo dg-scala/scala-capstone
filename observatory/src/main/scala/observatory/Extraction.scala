@@ -39,18 +39,23 @@ object Extraction {
       val statRdd = stations(sc.textFile(fsPath(stationsURL)))
       val tempRdd = temperatures(sc.textFile(fsPath(temperaturesURL)))
 
-      statRdd.join(tempRdd)
-        .mapValues(value => {
-          val station: Station = value._1
-          val tempRecords: Iterable[TemperatureRecord] = value._2
+      val resultsRdd =
+        statRdd.join(tempRdd)
+          .mapValues(value => {
+            val station: Station = value._1
+            val tempRecords: Iterable[TemperatureRecord] = value._2
 
-          val location = Location(station.latitude, station.longitude)
-          tempRecords.map(tempRecord =>
-            (LocalDate.of(year, tempRecord.month, tempRecord.day), location, celsius(tempRecord.fahrenheit))
-          )
-        })
-        .values
-        .reduce((vs1, vs2) => vs1 ++ vs2)
+            val location = Location(station.latitude, station.longitude)
+            tempRecords.map(tempRecord =>
+              (LocalDate.of(year, tempRecord.month, tempRecord.day), location, celsius(tempRecord.fahrenheit))
+            )
+          })
+          .values
+
+      if (resultsRdd.isEmpty())
+        Iterable.empty[(LocalDate, Location, Double)]
+      else
+        resultsRdd.reduce((v1, v2) => v1 ++ v2)
     }
   }
 
@@ -68,13 +73,17 @@ object Extraction {
   def fsPath(pathURL: URL): String = Paths.get(pathURL.toURI).toString
 
   def stations(rawStations: RDD[String]): RDD[(StationID, Station)] = {
-    def invalidStation(record: Array[String]) = {
-      val (stn, wban, lat, long) = (record(0), record(1), record(2), record(3))
-      (stn.isEmpty && wban.isEmpty) || lat.isEmpty || long.isEmpty
-    }
+
+    def invalidStation(record: Array[String]) =
+      if (record.length != 4)
+        true
+      else {
+        val (stn, wban, lat, long) = (record(0), record(1), record(2), record(3))
+        (stn.isEmpty && wban.isEmpty) || lat.isEmpty || long.isEmpty
+      }
 
     rawStations
-    .map(line => line.split(","))
+      .map(line => line.split(","))
       .filter(stationRecord => !invalidStation(stationRecord))
       .map(s => Station((s(0), s(1)), s(2).toDouble, s(3).toDouble))
       .groupBy(_.stationId)
@@ -82,13 +91,15 @@ object Extraction {
       .cache()
   }
 
-  def temperatures(rawTemperatures: RDD[String]): RDD[(StationID, Iterable[TemperatureRecord])] =
+  def temperatures(rawTemperatures: RDD[String]): RDD[(StationID, Iterable[TemperatureRecord])] = {
+
+    def invalidTemperatureRecord(record: Array[String]) = record.length != 5
+
     rawTemperatures
-      .map(line => {
-        val t = line.split(",")
-        TemperatureRecord((t(0), t(1)), t(2).toInt, t(3).toInt, t(4).toDouble)
-      })
+      .map(line => line.split(","))
+      .filter(tempRecord => !invalidTemperatureRecord(tempRecord))
+      .map(t => TemperatureRecord((t(0), t(1)), t(2).toInt, t(3).toInt, t(4).toDouble))
       .groupBy(_.stationId)
       .cache()
-
+  }
 }
