@@ -46,7 +46,7 @@ object Extraction {
 
           val location = Location(station.latitude, station.longitude)
           tempRecords.map(tempRecord =>
-            (new LocalDate(year, tempRecord.month, tempRecord.day), location, celsius(tempRecord.fahrenheit))
+            (LocalDate.of(year, tempRecord.month, tempRecord.day), location, celsius(tempRecord.fahrenheit))
           )
         })
         .values
