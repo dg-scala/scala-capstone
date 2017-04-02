@@ -8,12 +8,14 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 
+import scala.tools.nsc.interpreter.InputStream
+
 /**
   * 1st milestone: data extraction
   */
 object Extraction {
 
-  type StationID = (String, String)
+  case class StationID(stn: String, wban: String)
 
   case class Station(stationId: StationID, latitude: Double, longitude: Double)
 
@@ -31,14 +33,16 @@ object Extraction {
     */
   def locateTemperatures(year: Int, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Double)] = {
 
-    val stationsURL = getClass.getClassLoader.getResource(stationsFile)
-    val temperaturesURL = getClass.getClassLoader.getResource(temperaturesFile)
+    def sequenceFromStream(is: InputStream): Seq[String] = scala.io.Source.fromInputStream(is).getLines().toSeq
 
-    if (stationsURL == null || temperaturesURL == null)
+    val stationsStream = getClass.getResourceAsStream(stationsFile)
+    val temperaturesStream = getClass.getResourceAsStream(temperaturesFile)
+
+    if (stationsStream == null || temperaturesStream == null)
       Iterable.empty[(LocalDate, Location, Double)]
     else {
-      val statRdd = stations(sc.textFile(fsPath(stationsURL)))
-      val tempRdd = temperatures(sc.textFile(fsPath(temperaturesURL)))
+      val statRdd = stations(sc.parallelize(sequenceFromStream(stationsStream)))
+      val tempRdd = temperatures(sc.parallelize(sequenceFromStream(temperaturesStream)))
 
       val resultsRdd =
         statRdd.join(tempRdd)
@@ -70,8 +74,10 @@ object Extraction {
     recordsRdd
       .groupBy(_._2)
       .mapValues(records => records.foldRight(0.0)((rec, sum) => sum + rec._3) / records.size)
-      .collect
-      .toIterable
+      .aggregate(Iterable.empty[(Location, Double)])(
+        (acc, ld) => acc ++ Iterable.apply(ld),
+        (a1, a2) => a1 ++ a2
+      )
   }
 
   def celsius(fahrenheit: Double): Double = (fahrenheit - 32.0) * 5 / 9
@@ -91,7 +97,7 @@ object Extraction {
     rawStations
       .map(line => line.split(","))
       .filter(stationRecord => !invalidStation(stationRecord))
-      .map(s => Station((s(0), s(1)), s(2).toDouble, s(3).toDouble))
+      .map(s => Station(StationID(s(0), s(1)), s(2).toDouble, s(3).toDouble))
       .groupBy(_.stationId)
       .mapValues(_.head)
       .persist(StorageLevel.MEMORY_AND_DISK)
@@ -104,7 +110,7 @@ object Extraction {
     rawTemperatures
       .map(line => line.split(","))
       .filter(tempRecord => !invalidTemperatureRecord(tempRecord))
-      .map(t => TemperatureRecord((t(0), t(1)), t(2).toInt, t(3).toInt, t(4).toDouble))
+      .map(t => TemperatureRecord(StationID(t(0), t(1)), t(2).toInt, t(3).toInt, t(4).toDouble))
       .groupBy(_.stationId)
       .persist(StorageLevel.MEMORY_AND_DISK)
   }

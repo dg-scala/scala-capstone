@@ -12,19 +12,19 @@ class ExtractionTest extends FunSuite {
 
   test("empty sequence returned when stations file not found") {
 
-    val actual = locateTemperatures(1975, "dummy.csv", "1975.csv")
+    val actual = locateTemperatures(1975, "/dummy.csv", "/1975.csv")
     assert(actual == Iterable.empty[(LocalDate, Location, Double)], "empty sequence expected for invalid station files")
   }
 
   test("emtpy sequence returned when temperatures file not found") {
 
-    val actual = locateTemperatures(1975, "stations.csv", "1973.csv")
+    val actual = locateTemperatures(1975, "/stations.csv", "/1973.csv")
     assert(actual == Iterable.empty[(LocalDate, Location, Double)], "empty sequence expected for invalid temperatures files")
   }
 
   test("empty sequence returned for temperatures with no location coordinates") {
 
-    val actual = locateTemperatures(1975, "stations.csv", "no_location.csv")
+    val actual = locateTemperatures(1975, "/stations.csv", "/no_location.csv")
     assert(actual == Iterable.empty[(LocalDate, Location, Double)], "empty sequence expected for temperatures with no location")
   }
 
@@ -35,7 +35,7 @@ class ExtractionTest extends FunSuite {
       (LocalDate.of(1975, 1, 29), Location(37.358, -78.438), 2.0)
     )
     val actual =
-      locateTemperatures(1975, "stations.csv", "1975.csv")
+      locateTemperatures(1975, "/stations.csv", "/1975.csv")
         .map(r => (r._1, r._2, Math.round(r._3 * 10.0).toDouble / 10.0))
     assert(actual.forall(a => expected.contains(a)), "correct temperatures should be returned for test data")
   }
@@ -46,7 +46,7 @@ class ExtractionTest extends FunSuite {
       (Location(37.358, -78.438), 1.0)
     )
     val actual =
-      locationYearlyAverageRecords(locateTemperatures(1975, "stations.csv", "1975.csv"))
+      locationYearlyAverageRecords(locateTemperatures(1975, "/stations.csv", "/1975.csv"))
         .map(r => (r._1, Math.round(r._2 * 10.0).toDouble / 10.0))
     assert(actual.forall(a => expected.contains(a)), "correct averages temperatures should be returned for test data")
   }
