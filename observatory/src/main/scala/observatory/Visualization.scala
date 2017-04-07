@@ -1,6 +1,8 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
+import monix.eval.Coeval.Error
+
 import math._
 
 /**
@@ -14,8 +16,8 @@ object Visualization {
     * @return The predicted temperature at `location`
     */
   def predictTemperature(temperatures: Iterable[(Location, Double)], location: Location): Double = {
-    if (temperatures.isEmpty)
-      throw new Error("You cannot predictTemperature with an empty temperatures data set.")
+
+    if (temperatures.isEmpty) throw new RuntimeException("temperatures cannot be empty")
 
     val (numerator, denominator, exact) =
       temperatures.foldLeft((0.0, 0.0, 9999.9))((acc, loctemp) => {
@@ -37,25 +39,30 @@ object Visualization {
     * @return The color that corresponds to `value`, according to the color scale defined by `points`
     */
   def interpolateColor(points: Iterable[(Double, Color)], value: Double): Color = {
+
+    if (points.isEmpty) throw new RuntimeException("points cannot be empty")
+
     def closestPoints: ((Double, Color), (Double, Color)) = {
       val pointsMap = points.toMap
       val (low, high) =
         pointsMap.keys.foldLeft((Double.MinValue, Double.MaxValue))((lh, pt) => {
-          val (l, h) = (lh._1, lh._2)
+          val (lo, hi) = (lh._1, lh._2)
 
-          if (l == value && h == value) (l, h)
+          if (lo == value && hi == value) (lo, hi)
           else if (pt == value) (pt, pt)
           else if (pt < value) {
-            if (pt > l) (pt, h)
-            else (l, h)
+            if (pt > lo) (pt, hi)
+            else (lo, hi)
           }
           else {
-            if (pt < h) (l, pt)
-            else (l, h)
+            if (pt < hi) (lo, pt)
+            else (lo, hi)
           }
         })
 
-      ((low, pointsMap(low)), (high, pointsMap(high)))
+      if (low == Double.MinValue) ((high, pointsMap(high)), (high, pointsMap(high)))
+      else if (high == Double.MaxValue) ((low, pointsMap(low)), (low, pointsMap(low)))
+      else ((low, pointsMap(low)), (high, pointsMap(high)))
     }
 
     val (before, after) = (closestPoints._1._1, closestPoints._2._1)

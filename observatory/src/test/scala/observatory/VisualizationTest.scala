@@ -6,6 +6,8 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.prop.Checkers
 
+import scala.util.Try
+
 @RunWith(classOf[JUnitRunner])
 class VisualizationTest extends FunSuite with Checkers {
 
@@ -18,6 +20,17 @@ class VisualizationTest extends FunSuite with Checkers {
 
   def between(actual: Double, x: Double, y: Double): Boolean =
     (x <= actual) && (actual <= y)
+
+  val tempColors = Seq(
+    (60.0, Color(255, 255, 255)),
+    (32.0, Color(255, 0, 0)),
+    (12.0, Color(255, 255, 0)),
+    (0.0, Color(0, 255, 255)),
+    (-15.0, Color(0, 0, 255)),
+    (-27.0, Color(255, 0, 255)),
+    (-50.0, Color(33, 0, 107)),
+    (-60.0, Color(0, 0, 0))
+  )
 
   test("arial distance between London and Belgrade") {
     val expected: Double = 1688.97
@@ -56,8 +69,34 @@ class VisualizationTest extends FunSuite with Checkers {
     )
     val location = Location(49.95, 1.25)
     val temp = predictTemperature(temps, location)
-    println(s"temp = $temp")
     assert(between(temp, 17.5, 18.5), "temperature should be closer to the closest points")
+  }
+
+  test("test empty points") {
+    import scala.util.control.Exception._
+
+    val empty = Iterable.empty[(Double, Color)]
+    val actual: Try[Color] = catching(classOf[RuntimeException]).withTry(interpolateColor(empty, 0.0))
+    assert(actual.isFailure, "interpolateColor should throw RuntimeException for empty points")
+  }
+
+  test("interpolate colors with exact match") {
+    val expected = Color(0, 255, 255)
+    val actual = interpolateColor(tempColors, 0.0)
+    assert(actual == expected, "interpolate colors should return exact color for known temperature")
+  }
+
+  test("interpolate should respect upper and lower bounds") {
+    val upper = Color(255, 255, 255)
+    val lower = Color(0, 0, 0)
+    assert(upper == interpolateColor(tempColors, 70.0), "interpolate should respect upper bound")
+    assert(lower == interpolateColor(tempColors, -61.0), "interpolate should respect lower bound")
+  }
+
+  test("interpolate color in range but not exact") {
+    val expected = Color(255, 127, 0)
+    val actual = interpolateColor(tempColors, 22.0)
+    assert(actual == expected, "color should be correctly interpolated for unknown temperature in range")
   }
 
 }
