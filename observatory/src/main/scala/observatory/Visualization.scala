@@ -50,7 +50,7 @@ object Visualization {
   }
 
   // the higher the fudgeFactor the more closer geolocations dominate predictTemperatures calculation
-  val fudgeFactor = 16.0
+  val fudgeFactor = 2.0
 
   def weight(l1: Location, l2: Location, power: Double): Double = 1 / pow(haversineDistance(l1, l2), power)
 
