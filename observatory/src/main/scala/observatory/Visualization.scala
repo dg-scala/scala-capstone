@@ -104,7 +104,7 @@ object Visualization {
 
   def interpolate2(before: (Double, Color), after: (Double, Color), value: Double): Color = {
     def interpolateComponent(y0: Int, y1: Int): Int =
-      (y0 + (value - before._1) * (y1 - y0) / (after._1 - before._1)).toInt
+      round(y0.toDouble + (value - before._1) * (y1.toDouble - y0.toDouble) / (after._1 - before._1)).toInt
 
     Color(
       interpolateComponent(before._2.red, after._2.red),

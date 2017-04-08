@@ -94,9 +94,15 @@ class VisualizationTest extends FunSuite with Checkers {
   }
 
   test("interpolate color in range but not exact") {
-    val expected = Color(255, 127, 0)
+    val expected = Color(255, 128, 0)
     val actual = interpolateColor(tempColors, 22.0)
     assert(actual == expected, "color should be correctly interpolated for unknown temperature in range")
+  }
+
+  test("grader [#2 - Raw data display] color interpolation") {
+    val expected = Color(128,0,128)
+    val actual = interpolateColor(List((-2.147483648E9,Color(255,0,0)), (-1.0,Color(0,0,255))), -1.0737418245E9)
+    assert(actual == expected, s"Failed grader [#2 - Raw data display] color interpolation, $expected, $actual")
   }
 
 }
