@@ -105,4 +105,12 @@ class VisualizationTest extends FunSuite with Checkers {
     assert(actual == expected, s"Failed grader [#2 - Raw data display] color interpolation, $expected, $actual")
   }
 
+  test("transform coordinates to location") {
+    assert(Location(90, -180) == coordinatesToLocation(0, 0))
+    assert(Location(0.0, 0.0) == coordinatesToLocation(180, 90))
+    assert(Location(-90, 180) == coordinatesToLocation(360, 180))
+    assert(Location(-90, -180) == coordinatesToLocation(0, 180))
+    assert(Location(90, 180) == coordinatesToLocation(360, 0))
+  }
+
 }

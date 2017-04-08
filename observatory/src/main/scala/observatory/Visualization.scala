@@ -80,8 +80,16 @@ object Visualization {
     * @return A 360×180 image where each pixel shows the predicted temperature at its location
     */
   def visualize(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)]): Image = {
-    ???
+    val canvas = Image(360, 180)
+    canvas.points.par.foreach((xy) => {
+      val (x, y) = (xy._1, xy._2)
+      val temp = predictTemperature(temperatures, coordinatesToLocation(x, y))
+      val xyColor = interpolateColor(colors, temp)
+      canvas.setPixel(x, y, Pixel(xyColor.red, xyColor.green, xyColor.blue, 255))
+    })
+    canvas
   }
+
 
   // the higher the fudgeFactor the more closer geolocations dominate predictTemperatures calculation
   val powerForWeights = 2.0
@@ -113,5 +121,6 @@ object Visualization {
     )
   }
 
+  def coordinatesToLocation(x: Int, y: Int) = Location(90 - y, x - 180)
 }
 

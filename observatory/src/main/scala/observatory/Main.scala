@@ -1,12 +1,33 @@
 package observatory
 
 import akka.actor.Terminated
+import observatory.Extraction.{locateTemperatures, locationYearlyAverageRecords}
+import observatory.Visualization.visualize
 
 import scala.concurrent.Future
 
 object Main extends App {
 
-  simulatePlayground()
+  def imagine(): Unit = {
+    val tempColors = Seq(
+      (60.0, Color(255, 255, 255)),
+      (32.0, Color(255, 0, 0)),
+      (12.0, Color(255, 255, 0)),
+      (0.0, Color(0, 255, 255)),
+      (-15.0, Color(0, 0, 255)),
+      (-27.0, Color(255, 0, 255)),
+      (-50.0, Color(33, 0, 107)),
+      (-60.0, Color(0, 0, 0))
+    )
+
+    val img = visualize(locationYearlyAverageRecords(locateTemperatures(1975, "/stations.csv", "/1975.csv")), tempColors)
+    img.output(new java.io.File("/home/dragan/Desktop/imagine1975.png"))
+    img.points.foreach(p => println(s"(${p._1}, ${p._2}) = RGBA(${img.pixel(p).red}, ${img.pixel(p).green}, ${img.pixel(p).blue}, ${img.pixel(p).alpha}"))
+  }
+
+//  imagine()
+
+//  simulatePlayground()
 
   def simulatePlayground(): Future[Terminated] = {
     import akka.stream._
