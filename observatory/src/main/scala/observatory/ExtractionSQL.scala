@@ -1,15 +1,11 @@
 package observatory
 
+import java.io.InputStream
 import java.net.URL
 import java.nio.file.Paths
-import java.time.LocalDate
-import java.io.InputStream
 
-import observatory.Extraction.{Station, StationID, TemperatureRecord}
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{DataFrame, Dataset}
-import org.apache.spark.storage.StorageLevel
+import org.apache.spark.sql.Dataset
 
 /**
   * Created by dragan on 09/04/17.
@@ -36,15 +32,13 @@ object ExtractionSQL {
 
   case class TemperatureAverage(stationId: StationID, celsius: Double)
 
-  case class LocationAverage(location: Location, celsius: Double)
-
   /**
     * @param year             Year number
     * @param stationsFile     Path of the stations resource file to use (e.g. "/stations.csv")
     * @param temperaturesFile Path of the temperatures resource file to use (e.g. "/1975.csv")
     * @return A sequence containing, for each location, the average temperature over the year.
     */
-  def locationYearlyAverageRecordsSQL(year: Int, stationsFile: String, temperaturesFile: String): DataFrame = {
+  def locationYearlyAverageRecordsSQL(year: Int, stationsFile: String, temperaturesFile: String): Iterable[(Location, Double)] = {
     def sequenceFromStream(is: InputStream): Seq[String] = scala.io.Source.fromInputStream(is).getLines().toSeq
 
     val stationsStream = getClass.getResourceAsStream(stationsFile)
@@ -59,6 +53,13 @@ object ExtractionSQL {
       .map(row => TemperatureAverage(row._1, celsius(row._2)))
 
     averages.join(statDS, averages("stationId") === statDS("stationId"))
+      .map(row => (
+        Location(
+          row(3).asInstanceOf[Double],
+          row(4).asInstanceOf[Double]),
+        row(1).asInstanceOf[Double]))
+      .collect
+      .toIterable
   }
 
   def celsius(fahrenheit: Double): Double = (fahrenheit - 32.0) * 5 / 9

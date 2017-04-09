@@ -3,17 +3,17 @@ package observatory
 import akka.actor.Terminated
 import observatory.Extraction.{locateTemperatures, locationYearlyAverageRecords}
 import observatory.Visualization.visualize
+import ExtractionSQL._
 
 import scala.concurrent.Future
 
 object Main extends App {
 
   def sqlise(): Unit = {
-    import ExtractionSQL._
-    locationYearlyAverageRecordsSQL(1975, "/stations.csv", "/1975.csv").show()
+    locationYearlyAverageRecordsSQL(1975, "/stations.csv", "/1975.csv")
   }
 
-  sqlise()
+//  sqlise()
 
   def imagine(): Unit = {
     val tempColors = Seq(
@@ -27,7 +27,7 @@ object Main extends App {
       (-60.0, Color(0, 0, 0))
     )
 
-    val img = visualize(locationYearlyAverageRecords(locateTemperatures(1975, "/stations.csv", "/1975.csv")), tempColors)
+    val img = visualize(locationYearlyAverageRecordsSQL(1975, "/stations.csv", "/1975.csv"), tempColors)
     img.output(new java.io.File("/home/dragan/Desktop/imagine1975.png"))
   }
 
