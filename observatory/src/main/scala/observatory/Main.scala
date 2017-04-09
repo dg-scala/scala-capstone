@@ -22,7 +22,6 @@ object Main extends App {
 
     val img = visualize(locationYearlyAverageRecords(locateTemperatures(1975, "/stations.csv", "/1975.csv")), tempColors)
     img.output(new java.io.File("/home/dragan/Desktop/imagine1975.png"))
-    img.points.foreach(p => println(s"(${p._1}, ${p._2}) = RGBA(${img.pixel(p).red}, ${img.pixel(p).green}, ${img.pixel(p).blue}, ${img.pixel(p).alpha}"))
   }
 
 //  imagine()
