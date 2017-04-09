@@ -3,12 +3,12 @@ package observatory
 import java.net.URL
 import java.nio.file.Paths
 import java.time.LocalDate
+import java.io.InputStream
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 
-import scala.tools.nsc.interpreter.InputStream
 
 /**
   * 1st milestone: data extraction

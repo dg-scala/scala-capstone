@@ -8,6 +8,13 @@ import scala.concurrent.Future
 
 object Main extends App {
 
+  def sqlise(): Unit = {
+    import ExtractionSQL._
+    locationYearlyAverageRecordsSQL(1975, "/stations.csv", "/1975.csv").show()
+  }
+
+  sqlise()
+
   def imagine(): Unit = {
     val tempColors = Seq(
       (60.0, Color(255, 255, 255)),
