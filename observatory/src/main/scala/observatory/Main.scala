@@ -28,10 +28,10 @@ object Main extends App {
     )
 
     val img = visualize(locationYearlyAverageRecords(locateTemperatures(1975, "/stations.csv", "/1975.csv")), tempColors)
-    img.output(new java.io.File(s"${sys.env("HOME")}/Desktop/imagine1975.png"))
+    img.output(homeFile("Desktop/imagine1975.png"))
   }
 
-  imagine()
+//  imagine()
 
 //  simulatePlayground()
 
