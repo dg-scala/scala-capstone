@@ -27,11 +27,11 @@ object Main extends App {
       (-60.0, Color(0, 0, 0))
     )
 
-    val img = visualize(locationYearlyAverageRecordsSQL(1975, "/stations.csv", "/1975.csv"), tempColors)
-    img.output(new java.io.File("/home/dragan/Desktop/imagine1975.png"))
+    val img = visualize(locationYearlyAverageRecords(locateTemperatures(1975, "/stations.csv", "/1975.csv")), tempColors)
+    img.output(new java.io.File(s"${sys.env("HOME")}/Desktop/imagine1975.png"))
   }
 
-//  imagine()
+  imagine()
 
 //  simulatePlayground()
 
