@@ -30,10 +30,21 @@ object Interaction {
     * @return A 256×256 image showing the contents of the tile defined by `x`, `y` and `zoom`
     */
   def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
+    def debug(): Unit = {
+      println("[DRAGAN] Start")
+      println(s"zoom = $zoom, x = $x, y = $y")
+      println("-- colors --")
+      colors.foreach((dc) => println(s"temp = ${dc._1}, col = ${dc._2}"))
+      println("-- temperatures --")
+      temperatures.foreach((ld) => println(s"loc = ${ld._1}, temp = ${ld._2}"))
+      println("[DRAGAN] End")
+    }
+//    debug()
+
     import Visualization._
 
     val canvas = Image(256, 256)
-    val alpha = 127
+    val alpha = 255
 
     /**
       *  @param xCol  Column coordinate of the pixel

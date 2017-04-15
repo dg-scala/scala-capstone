@@ -109,40 +109,67 @@ consumption (OutOfMemoryException).
   Falsified after 0 successful property evaluations.
   Location: (InteractionTest.scala:34)
   Occurred when passed generated values (
-    arg0 = false
+    arg0 = true
   )
-
-[DRAGAN] Start
-------------------------------------------
-[DRAGAN] temp = 0.0, col = Color(255,0,0)
-[DRAGAN] temp = 10.0, col = Color(0,255,0)
-[DRAGAN] temp = 20.0, col = Color(0,0,255)
-------------------------------------------
-[DRAGAN] loc = (45.0, -90.0), temp = 20.0
-[DRAGAN] loc = (45.0, 90.0), temp = 0.0
-[DRAGAN] loc = (0.0, 0.0), temp = 10.0
-[DRAGAN] loc = (-45.0, -90.0), temp = 0.0
-[DRAGAN] loc = (-45.0, 90.0), temp = 20.0
-------------------------------------------
-[DRAGAN] End
+  Label of failing property:
+    Incorrect computed color at Location(-27.059125784374057,-180.0): Color(153,0,102). Expected to be closer to Color(0,0,255) than Color(255,0,0)
+[Lost Points] 5
 
 [DRAGAN] Start
 zoom = 1, x = 0, y = 0
+-- colors --
+temp = 0.0, col = Color(255,0,0)
+temp = 10.0, col = Color(0,255,0)
+temp = 20.0, col = Color(0,0,255)
+-- temperatures --
+loc = Location(45.0,-90.0), temp = 20.0
+loc = Location(45.0,90.0), temp = 0.0
+loc = Location(0.0,0.0), temp = 10.0
+loc = Location(-45.0,-90.0), temp = 0.0
+loc = Location(-45.0,90.0), temp = 20.0
 [DRAGAN] End
+
 [DRAGAN] Start
 zoom = 1, x = 0, y = 1
+-- colors --
+temp = 0.0, col = Color(255,0,0)
+temp = 10.0, col = Color(0,255,0)
+temp = 20.0, col = Color(0,0,255)
+-- temperatures --
+loc = Location(45.0,-90.0), temp = 20.0
+loc = Location(45.0,90.0), temp = 0.0
+loc = Location(0.0,0.0), temp = 10.0
+loc = Location(-45.0,-90.0), temp = 0.0
+loc = Location(-45.0,90.0), temp = 20.0
 [DRAGAN] End
+
 [DRAGAN] Start
 zoom = 1, x = 1, y = 0
+-- colors --
+temp = 0.0, col = Color(255,0,0)
+temp = 10.0, col = Color(0,255,0)
+temp = 20.0, col = Color(0,0,255)
+-- temperatures --
+loc = Location(45.0,-90.0), temp = 20.0
+loc = Location(45.0,90.0), temp = 0.0
+loc = Location(0.0,0.0), temp = 10.0
+loc = Location(-45.0,-90.0), temp = 0.0
+loc = Location(-45.0,90.0), temp = 20.0
 [DRAGAN] End
+
 [DRAGAN] Start
 zoom = 1, x = 1, y = 1
+-- colors --
+temp = 0.0, col = Color(255,0,0)
+temp = 10.0, col = Color(0,255,0)
+temp = 20.0, col = Color(0,0,255)
+-- temperatures --
+loc = Location(45.0,-90.0), temp = 20.0
+loc = Location(45.0,90.0), temp = 0.0
+loc = Location(0.0,0.0), temp = 10.0
+loc = Location(-45.0,-90.0), temp = 0.0
+loc = Location(-45.0,90.0), temp = 20.0
 [DRAGAN] End
-
-  Label of failing property:
-    Incorrect computed color at Location(84.92832092949963,-180.0): Color(31,0,224). Expected to be closer to Color(255,0,0) than Color(0,0,255)
-[Lost Points] 5
-
 
 ======== TESTING ENVIRONMENT ========
 Limits: memory: 1500m,  total time: 850s,  per test case time: 240s
