@@ -23,10 +23,11 @@ object Visualization {
       temperatures.foldLeft((0.0, 0.0, 9999.9))((acc, loctemp) => {
         val (l, t) = (loctemp._1, loctemp._2)
         val (n, d, e) = (acc._1, acc._2, acc._3)
+        val distance = haversineDistance(l, location)
 
         if (e != 9999.9) acc
-        else if (haversineDistance(l, location) == 0) (n, d, t) // known temperature
-        else (n + weight(l, location, powerForWeights) * t, d + weight(l, location, powerForWeights), e)
+        else if (distance == 0) (n, d, t) // known temperature
+        else (n + weight(distance, powerForWeights) * t, d + weight(distance, powerForWeights), e)
       })
 
     if (exact != 9999.9) exact
@@ -99,7 +100,7 @@ object Visualization {
   // the higher the fudgeFactor the more closer geolocations dominate predictTemperatures calculation
   val powerForWeights = 2.0
 
-  def weight(l1: Location, l2: Location, power: Double): Double = 1 / pow(haversineDistance(l1, l2), power)
+  def weight(distance: Double, power: Double): Double = 1 / pow(distance, power)
 
   val earthRadius = 6372.8 //radius in km
 
