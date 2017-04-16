@@ -1,6 +1,5 @@
 package observatory
 
-
 import com.sksamuel.scrimage.Image
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -32,6 +31,8 @@ class VisualizationTest extends FunSuite with Checkers {
     (-50.0, Color(33, 0, 107)),
     (-60.0, Color(0, 0, 0))
   )
+
+  def imageEq(im1: Image, im2: Image): Boolean = im1.pixels.sameElements(im2.pixels)
 
   test("arial distance between London and Belgrade") {
     val expected: Double = 1688.97
@@ -119,7 +120,7 @@ class VisualizationTest extends FunSuite with Checkers {
     val cols = List((36.1643835403579,Color(255,0,0)), (-21.219052136494582,Color(0,0,255)))
     val t = visualize(ts, cols)
 //    t.output(Paths.get(getClass.getResource("/visualiseThis.png").toURI))
-    assert(imageEq(t, Image.fromResource("/visualiseThis.png")))
+    assert(imageEq(t, Image.fromResource("/visualiseThis.png")), "visualise this failed")
   }
 
 }

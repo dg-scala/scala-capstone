@@ -6,7 +6,6 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.prop.Checkers
 
-
 @RunWith(classOf[JUnitRunner])
 class InteractionTest extends FunSuite with Checkers {
 
@@ -25,6 +24,8 @@ class InteractionTest extends FunSuite with Checkers {
     (10.0, Color(0,255,0)),
     (20.0, Color(0,0,255))
   )
+
+  def imageEq(im1: Image, im2: Image): Boolean = im1.pixels.sameElements(im2.pixels)
 
   test("test grader rubbish") {
     import Visualization._
