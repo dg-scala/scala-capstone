@@ -1,20 +1,16 @@
 package observatory
 
-import java.nio.file.Paths
-
 import com.sksamuel.scrimage.Image
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.prop.Checkers
 
-import scala.collection.concurrent.TrieMap
 
 @RunWith(classOf[JUnitRunner])
 class InteractionTest extends FunSuite with Checkers {
 
   import Interaction._
-  import Visualization._
 
   val temperatures = Seq(
     (Location(45.0, -90.0), 20.0),
