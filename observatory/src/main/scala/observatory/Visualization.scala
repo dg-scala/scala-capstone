@@ -23,14 +23,10 @@ object Visualization {
       temperatures.foldLeft((0.0, 0.0, 9999.9))((acc, loctemp) => {
         val (l, t) = (loctemp._1, loctemp._2)
         val (n, d, e) = (acc._1, acc._2, acc._3)
-        val distance = haversineDistance(l, location)
 
         if (e != 9999.9) acc
-        else if (distance == 0) (n, d, t) // known temperature
-        else {
-          val weightedDistance = weight(distance, powerForWeights)
-          (n + weightedDistance * t, d + weightedDistance, e)
-        }
+        else if (haversineDistance(l, location) == 0) (n, d, t) // known temperature
+        else (n + weight(l, location, powerForWeights) * t, d + weight(l, location, powerForWeights), e)
       })
 
     if (exact != 9999.9) exact
@@ -103,19 +99,18 @@ object Visualization {
   // the higher the fudgeFactor the more closer geolocations dominate predictTemperatures calculation
   val powerForWeights = 2.0
 
-  def weight(distance: Double, power: Double): Double = 1 / pow(distance, power)
+  def weight(l1: Location, l2: Location, power: Double): Double = 1 / pow(haversineDistance(l1, l2), power)
 
   val earthRadius = 6372.8 //radius in km
 
   // method adapted from https://rosettacode.org/wiki/Haversine_formula#Scala
-  // and using the trigonometric identities for sum and half angles
   def haversineDistance(l1: Location, l2: Location): Double = {
-    val cosDeltaLat = l2.cosLat * l1.cosLat + l2.sinLat * l1.sinLat
-    val cosDeltaLon = l2.cosLon * l1.cosLon + l2.sinLon * l1.sinLon
-    val sinHalfDeltaLatSquared = (1.0 - cosDeltaLat) / 2.0
-    val sinHalfDeltaLonSquared = (1.0 - cosDeltaLon) / 2.0
+    val (lat1, lon1) = (l1.lat, l1.lon)
+    val (lat2, lon2) = (l2.lat, l2.lon)
+    val dLat = (lat2 - lat1).toRadians
+    val dLon = (lon2 - lon1).toRadians
 
-    val a = sinHalfDeltaLatSquared + sinHalfDeltaLonSquared * l1.cosLat * l2.cosLat
+    val a = pow(sin(dLat / 2), 2) + pow(sin(dLon / 2), 2) * cos(lat1.toRadians) * cos(lat2.toRadians)
     val c = 2 * asin(sqrt(a))
     earthRadius * c
   }

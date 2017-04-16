@@ -30,36 +30,25 @@ object Interaction {
     * @return A 256×256 image showing the contents of the tile defined by `x`, `y` and `zoom`
     */
   def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
-    def debug(): Unit = {
-      println("[DRAGAN] Start")
-      println(s"zoom = $zoom, x = $x, y = $y")
-      println("-- colors --")
-      colors.foreach((dc) => println(s"temp = ${dc._1}, col = ${dc._2}"))
-      println("-- temperatures --")
-      temperatures.foreach((ld) => println(s"loc = ${ld._1}, temp = ${ld._2}"))
-      println("[DRAGAN] End")
-    }
-//    debug()
-
     import Visualization._
 
     val canvas = Image(256, 256)
     val alpha = 127
 
     /**
-      * @param xCol Column coordinate of the pixel
-      * @param yRow Row coordinate of the pixel
-      * @return The `Location` of a pixel in a tile defined by `x`, `y` and `zoom`
+      *  @param xCol  Column coordinate of the pixel
+      *  @param yRow  Row coordinate of the pixel
+      *  @return The `Location` of a pixel in a tile defined by `x`, `y` and `zoom`
       */
     def zoomedLocation(xCol: Int, yRow: Int): Location = {
-      val topLeftPixel = tileLocation(zoom, x, y)
-      val bottomRightPixel = tileLocation(zoom, x + 1, y + 1)
+      val topLeft = tileLocation(zoom, x, y)
+      val bottomRight = tileLocation(zoom, x + 1, y + 1)
 
-      val deltaY = bottomRightPixel.lat - topLeftPixel.lat
-      val deltaX = bottomRightPixel.lon - topLeftPixel.lon
+      val deltaY = bottomRight.lat - topLeft.lat
+      val deltaX = bottomRight.lon - topLeft.lon
       Location(
-        topLeftPixel.lat + (yRow * deltaY / 256),
-        topLeftPixel.lon + (xCol * deltaX / 256)
+        topLeft.lat + (yRow * deltaY / 256),
+        topLeft.lon + (xCol * deltaX / 256)
       )
     }
 
@@ -80,24 +69,6 @@ object Interaction {
     generateImage: (Int, Int, Int, Int, Data) => Unit
   ): Unit = {
     ???
-//    yearlyData.foreach((yearData) => {
-//      val year = yearData._1
-//      val data = yearData._2
-//      var zoom = 0
-//      val maxZoom = 3
-//      while (zoom <= maxZoom) {
-//        var (x, y) = (0, 0)
-//        val (maxX, maxY) = (pow(2, zoom).toInt, pow(2, zoom).toInt)
-//        while (x < maxX) {
-//          while (y < maxY) {
-//            generateImage(year, zoom, x, y, data)
-//            y += 1
-//          }
-//          x += 1
-//        }
-//        zoom += 1
-//      }
-//    })
   }
 
 }
