@@ -58,8 +58,6 @@ class InteractionTest extends FunSuite with Checkers {
     assert(l122 == Location(-85.05112877980659,180.0))
   }
 
-  def imageEq(im1: Image, im2: Image): Boolean = im1.pixels.sameElements(im2.pixels)
-
   test("tile on zoom 1") {
     val tile0 = tile(temperatures, colors, 0, 0, 0)
 //    tile0.output(Paths.get(getClass.getResource("/tile0.png").toURI))
@@ -80,14 +78,6 @@ class InteractionTest extends FunSuite with Checkers {
     val tile1br = tile(temperatures, colors, 1, 1, 1)
 //    tile1br.output(Paths.get(getClass.getResource("/tile1br.png").toURI))
     assert(imageEq(Image(256, 256).overlay(tile1br), Image.fromResource("/tile1br.png")))
-  }
-
-  test("visualize this") {
-    val ts = List((Location(45.0,-90.0),36.1643835403579), (Location(-45.0,0.0),-21.219052136494582))
-    val cols = List((36.1643835403579,Color(255,0,0)), (-21.219052136494582,Color(0,0,255)))
-    val t = visualize(ts, cols)
-//    t.output(Paths.get(getClass.getResource("/visualiseThis.png").toURI))
-    assert(imageEq(t, Image.fromResource("/visualiseThis.png")))
   }
 
 }

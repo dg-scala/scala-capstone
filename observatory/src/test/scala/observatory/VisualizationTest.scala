@@ -1,6 +1,7 @@
 package observatory
 
 
+import com.sksamuel.scrimage.Image
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -111,6 +112,14 @@ class VisualizationTest extends FunSuite with Checkers {
     assert(Location(-90, 180) == coordinatesToLocation(360, 180))
     assert(Location(-90, -180) == coordinatesToLocation(0, 180))
     assert(Location(90, 180) == coordinatesToLocation(360, 0))
+  }
+
+  test("visualize this") {
+    val ts = List((Location(45.0,-90.0),36.1643835403579), (Location(-45.0,0.0),-21.219052136494582))
+    val cols = List((36.1643835403579,Color(255,0,0)), (-21.219052136494582,Color(0,0,255)))
+    val t = visualize(ts, cols)
+//    t.output(Paths.get(getClass.getResource("/visualiseThis.png").toURI))
+    assert(imageEq(t, Image.fromResource("/visualiseThis.png")))
   }
 
 }
