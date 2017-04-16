@@ -34,6 +34,8 @@ class InteractionTest extends FunSuite with Checkers {
     import Visualization._
     val temp = predictTemperature(temperatures, Location(-27.059125784374057,-180.0))
     val col = interpolateColor(colors, temp)
+    val xCol = 0.0 // topLeft.lon + (xCol * deltaX / 256); topLeft.lon = -180.0, brCorner.lon = 180.0
+    val yRow = 168.723364287931977 // topLeft.lat + (yRow * deltaY / 256); topLeft.lat = 85.05112877980659, brCorner.lat = -85.05112877980659
     assert(temp == 10.0)
     assert(col == Color(0, 255, 0))
   }
@@ -84,6 +86,7 @@ class InteractionTest extends FunSuite with Checkers {
     val ts = List((Location(45.0,-90.0),36.1643835403579), (Location(-45.0,0.0),-21.219052136494582))
     val cols = List((36.1643835403579,Color(255,0,0)), (-21.219052136494582,Color(0,0,255)))
     val t = visualize(ts, cols)
+//    t.output(Paths.get(getClass.getResource("/visualiseThis.png").toURI))
     assert(imageEq(t, Image.fromResource("/visualiseThis.png")))
   }
 

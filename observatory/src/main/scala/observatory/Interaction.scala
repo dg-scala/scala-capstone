@@ -44,22 +44,22 @@ object Interaction {
     import Visualization._
 
     val canvas = Image(256, 256)
-    val alpha = 255
+    val alpha = 127
 
     /**
-      *  @param xCol  Column coordinate of the pixel
-      *  @param yRow  Row coordinate of the pixel
-      *  @return The `Location` of a pixel in a tile defined by `x`, `y` and `zoom`
+      * @param xCol Column coordinate of the pixel
+      * @param yRow Row coordinate of the pixel
+      * @return The `Location` of a pixel in a tile defined by `x`, `y` and `zoom`
       */
     def zoomedLocation(xCol: Int, yRow: Int): Location = {
-      val topLeft = tileLocation(zoom, x, y)
-      val bottomRight = tileLocation(zoom, x + 1, y + 1)
+      val topLeftPixel = tileLocation(zoom, x, y)
+      val bottomRightPixel = tileLocation(zoom, x + 1, y + 1)
 
-      val deltaY = bottomRight.lat - topLeft.lat
-      val deltaX = bottomRight.lon - topLeft.lon
+      val deltaY = bottomRightPixel.lat - topLeftPixel.lat
+      val deltaX = bottomRightPixel.lon - topLeftPixel.lon
       Location(
-        topLeft.lat + (yRow * deltaY / 256),
-        topLeft.lon + (xCol * deltaX / 256)
+        topLeftPixel.lat + (yRow * deltaY / 256),
+        topLeftPixel.lon + (xCol * deltaX / 256)
       )
     }
 
@@ -80,6 +80,24 @@ object Interaction {
     generateImage: (Int, Int, Int, Int, Data) => Unit
   ): Unit = {
     ???
+//    yearlyData.foreach((yearData) => {
+//      val year = yearData._1
+//      val data = yearData._2
+//      var zoom = 0
+//      val maxZoom = 3
+//      while (zoom <= maxZoom) {
+//        var (x, y) = (0, 0)
+//        val (maxX, maxY) = (pow(2, zoom).toInt, pow(2, zoom).toInt)
+//        while (x < maxX) {
+//          while (y < maxY) {
+//            generateImage(year, zoom, x, y, data)
+//            y += 1
+//          }
+//          x += 1
+//        }
+//        zoom += 1
+//      }
+//    })
   }
 
 }
