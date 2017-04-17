@@ -49,17 +49,20 @@ object Visualization2 {
 
     def gridTileTemperature: (Int, Int) => Double = (xCol, yRow) => {
       val loc = zoomedLocation(xCol, yRow, zoom, x, y)
-      val d00 = grid(loc.lat.ceil.toInt, loc.lon.floor.toInt)
-      val d01 = grid(loc.lat.ceil.toInt, loc.lon.ceil.toInt)
-      val d10 = grid(loc.lat.floor.toInt, loc.lon.floor.toInt)
-      val d11 = grid(loc.lat.floor.toInt, loc.lon.ceil.toInt)
 
       val tl = Location(loc.lat.ceil, loc.lon.floor)
       val tr = Location(loc.lat.ceil, loc.lon.ceil)
       val bl = Location(loc.lat.floor, loc.lon.floor)
+      val br = Location(loc.lat.floor, loc.lon.ceil)
 
-      val dx = haversineDistance(Location(loc.lat.ceil, loc.lon), tl) / haversineDistance(tl, tr)
-      val dy = haversineDistance(Location(loc.lat, loc.lon.floor), tl) / haversineDistance(tl, bl)
+      val d00 = grid(tl.lat.toInt, tl.lon.toInt)
+      val d10 = grid(tr.lat.toInt, tr.lon.toInt)
+      val d01 = grid(bl.lat.toInt, bl.lon.toInt)
+      val d11 = grid(br.lat.toInt, br.lon.toInt)
+
+
+      val dx = loc.lon - tl.lon
+      val dy = tl.lat - loc.lat
       bilinearInterpolation(dx, dy, d00, d01, d10, d11)
     }
 
