@@ -21,6 +21,10 @@ object Extraction {
 
   case class TemperatureRecord(stationId: StationID, month: Int, day: Int, fahrenheit: Double)
 
+
+  @transient lazy val conf: SparkConf = new SparkConf().setMaster("local").setAppName("Capstone")
+  @transient lazy val sc: SparkContext = new SparkContext(conf)
+
   /**
     * @param year             Year number
     * @param stationsFile     Path of the stations resource file to use (e.g. "/stations.csv")

@@ -1,8 +1,5 @@
 package observatory
 
-import observatory.spark.implicits._
-import org.apache.spark.sql.functions._
-
 /**
   * 4th milestone: value-added information
   */
@@ -33,17 +30,10 @@ object Manipulation {
     *                      is a collection of pairs of location and temperature)
     * @return A function that, given a latitude and a longitude, returns the average temperature at this location
     */
-  def average(temperaturess: Iterable[Iterable[(Location, Double)]]): (Int, Int) => Double = {
-    val rdd = temperaturess.foldLeft(sc.emptyRDD[(Location, Double)])((acc, next) => acc ++ sc.parallelize(next.toSeq))
-    val ds = spark.createDataset[TemperatureAtLocation](rdd.map(lt => TemperatureAtLocation(lt._1.lat, lt._1.lon, lt._2)))
+  def average(temperaturess: Iterable[Iterable[(Location, Double)]]): (Int, Int) => Double = (lat, lon) => {
     val averages =
-      ds.groupByKey(row => (row.lat, row.lon))
-        .agg(avg($"temperature").as[Double])
-        .map(row => (Location(row._1._1, row._1._2), row._2))
-        .collect()
-        .toIterable
-
-    makeGrid(averages)
+      temperaturess.foldLeft(Iterable.empty[Double])((acc, temps) => acc ++ Iterable(makeGrid(temps)(lat, lon)))
+    averages.sum / averages.size
   }
 
   /**
