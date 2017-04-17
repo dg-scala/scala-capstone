@@ -1,6 +1,6 @@
 package observatory
 
-import com.sksamuel.scrimage.{Image, Pixel}
+import com.sksamuel.scrimage.Image
 
 /**
   * 5th milestone: value-added information visualization
@@ -25,7 +25,7 @@ object Visualization2 {
     d10: Double,
     d11: Double
   ): Double = {
-    ???
+    d00 * (1 - x) * (1 - y) + d10 * x * (1 - y) + d01 * (1 - x) * y + d11 * x * y
   }
 
   /**
@@ -43,7 +43,26 @@ object Visualization2 {
     x: Int,
     y: Int
   ): Image = {
-    ???
+    val canvas = Image(256,256)
+    val alpha = 127
+
+    canvas.points.par.foreach((xy) => {
+      // work out geolocation for lat and lon, given zoom and x and y
+      // interpolate temperature for lat and lon
+      // interpolate colour for lat and lon
+      ???
+    })
+    canvas
   }
+
+//  def visualizeImage(canvas: Image, temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], alpha: Int)
+//    (xy2Location: (Int, Int) => Location): Unit = {
+//    canvas.points.par.foreach((xy) => {
+//      val (x, y) = (xy._1, xy._2)
+//      val temp = predictTemperature(temperatures, xy2Location(x, y))
+//      val xyColor = interpolateColor(colors, temp)
+//      canvas.setPixel(x, y, Pixel(xyColor.red, xyColor.green, xyColor.blue, alpha))
+//    })
+//  }
 
 }
