@@ -1,5 +1,7 @@
 package observatory
 
+import java.nio.file.Paths
+
 import com.sksamuel.scrimage.Image
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -53,6 +55,17 @@ class InteractionTest extends FunSuite with Checkers {
     assert(l1tr == Location(85.05112877980659,0.0))
     assert(l1br == Location(0.0,0.0))
     assert(l122 == Location(-85.05112877980659,180.0))
+
+    val l2tl = tileLocation(2, 0, 0)
+    assert(l2tl == l1tl)
+    val l202 = tileLocation(2, 0, 2)
+    assert(l202 == l1bl)
+    val l220 = tileLocation(2, 2, 0)
+    assert(l220 == l1tr)
+    val l2mid = tileLocation(2, 2, 2)
+    assert(l2mid == l1br)
+    val l244 = tileLocation(2, 4, 4)
+    assert(l244 == l122)
   }
 
   test("tile on zoom 1") {

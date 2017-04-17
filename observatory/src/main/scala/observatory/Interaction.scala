@@ -40,17 +40,7 @@ object Interaction {
       *  @param yRow  Row coordinate of the pixel
       *  @return The `Location` of a pixel in a tile defined by `x`, `y` and `zoom`
       */
-    def zoomedLocation(xCol: Int, yRow: Int): Location = {
-      val topLeft = tileLocation(zoom, x, y)
-      val bottomRight = tileLocation(zoom, x + 1, y + 1)
-
-      val deltaY = bottomRight.lat - topLeft.lat
-      val deltaX = bottomRight.lon - topLeft.lon
-      Location(
-        topLeft.lat + (yRow * deltaY / 256),
-        topLeft.lon + (xCol * deltaX / 256)
-      )
-    }
+    def zoomedLocation(xCol: Int, yRow: Int): Location = tileLocation(zoom + 8, x * 256 + xCol, y * 256 + yRow)
 
     visualizeImage(canvas, temperatures, colors, alpha)(zoomedLocation)
     canvas
