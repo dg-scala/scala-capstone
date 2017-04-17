@@ -60,7 +60,6 @@ object Visualization2 {
       val d01 = grid(bl.lat.toInt, bl.lon.toInt)
       val d11 = grid(br.lat.toInt, br.lon.toInt)
 
-
       val dx = loc.lon - tl.lon
       val dy = tl.lat - loc.lat
       bilinearInterpolation(dx, dy, d00, d01, d10, d11)
