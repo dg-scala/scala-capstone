@@ -1,6 +1,10 @@
 package observatory
 
-import com.sksamuel.scrimage.Image
+import com.sksamuel.scrimage.{Image, Pixel}
+import observatory.Interaction.tileLocation
+import observatory.Visualization.interpolateColor
+
+import scala.math._
 
 /**
   * 5th milestone: value-added information visualization
@@ -8,8 +12,8 @@ import com.sksamuel.scrimage.Image
 object Visualization2 {
 
   /**
-    * @param x X coordinate between 0 and 1
-    * @param y Y coordinate between 0 and 1
+    * @param x   X coordinate between 0 and 1
+    * @param y   Y coordinate between 0 and 1
     * @param d00 Top-left value
     * @param d01 Bottom-left value
     * @param d10 Top-right value
@@ -29,11 +33,11 @@ object Visualization2 {
   }
 
   /**
-    * @param grid Grid to visualize
+    * @param grid   Grid to visualize
     * @param colors Color scale to use
-    * @param zoom Zoom level of the tile to visualize
-    * @param x X value of the tile to visualize
-    * @param y Y value of the tile to visualize
+    * @param zoom   Zoom level of the tile to visualize
+    * @param x      X value of the tile to visualize
+    * @param y      Y value of the tile to visualize
     * @return The image of the tile at (x, y, zoom) showing the grid using the given color scale
     */
   def visualizeGrid(
@@ -43,26 +47,35 @@ object Visualization2 {
     x: Int,
     y: Int
   ): Image = {
-    val canvas = Image(256,256)
+
+    /**
+      * @param xCol Column coordinate of the pixel
+      * @param yRow Row coordinate of the pixel
+      * @return The `Location` of a pixel in a tile defined by `x`, `y` and `zoom`
+      */
+    def zoomedLocation(xCol: Int, yRow: Int): Location = tileLocation(zoom + 8, x * 256 + xCol, y * 256 + yRow)
+
+    def gridTileTemperature: (Int, Int) => Double = (xCol, yRow) => {
+        val loc = zoomedLocation(xCol, yRow)
+        val d00 = grid(loc.lat.floor, loc.lon.floor)
+        val d01 = grid(loc.lat.floor, loc.lon.ceil)
+        val d10 = grid(loc.lat.ceil, loc.lon.floor)
+        val d11 = grid(loc.lat.ceil, loc.lon.ceil)
+        val dx = loc.lon - loc.lon.floor
+        val dy = loc.lat - loc.lat.floor
+        bilinearInterpolation(dx, dy, d00, d01, d10, d11)
+      }
+
+    val canvas = Image(256, 256)
     val alpha = 127
 
     canvas.points.par.foreach((xy) => {
-      // work out geolocation for lat and lon, given zoom and x and y
-      // interpolate temperature for lat and lon
-      // interpolate colour for lat and lon
-      ???
+      val (xCol, yRow) = (xy._1, xy._2)
+      val estTemperature = gridTileTemperature(xCol, yRow)
+      val xyColor = interpolateColor(colors, estTemperature)
+      canvas.setPixel(x, y, Pixel(xyColor.red, xyColor.green, xyColor.blue, alpha))
     })
     canvas
   }
-
-//  def visualizeImage(canvas: Image, temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], alpha: Int)
-//    (xy2Location: (Int, Int) => Location): Unit = {
-//    canvas.points.par.foreach((xy) => {
-//      val (x, y) = (xy._1, xy._2)
-//      val temp = predictTemperature(temperatures, xy2Location(x, y))
-//      val xyColor = interpolateColor(colors, temp)
-//      canvas.setPixel(x, y, Pixel(xyColor.red, xyColor.green, xyColor.blue, alpha))
-//    })
-//  }
 
 }
