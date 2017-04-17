@@ -1,5 +1,8 @@
 package observatory
 
+import java.nio.file.Paths
+
+import com.sksamuel.scrimage.Image
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -8,6 +11,8 @@ import org.scalatest.prop.Checkers
 @RunWith(classOf[JUnitRunner])
 class Visualization2Test extends FunSuite with Checkers {
   import Visualization2._
+
+  def imageEq(im1: Image, im2: Image): Boolean = im1.pixels.sameElements(im2.pixels)
 
   test("bilinear interpolation") {
     val d00 = -1.0
@@ -27,6 +32,9 @@ class Visualization2Test extends FunSuite with Checkers {
       (30.0,Color(0,0,255))
     )
     val (zoom, x, y) = (0, 0, 0)
-
+    val grid: (Int, Int) => Double = (_, _) => 12.5
+    val img = visualizeGrid(grid, colors, zoom, x, y)
+//    img.output(Paths.get(getClass.getResource("/gridTile.png").toURI))
+    assert(imageEq(Image(256, 256).overlay(img), Image.fromResource("/gridTile.png")))
   }
 }

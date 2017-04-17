@@ -2,7 +2,7 @@ package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
 import observatory.Interaction.zoomedLocation
-import observatory.Visualization.visualizeImage
+import observatory.Visualization.{visualizeImage, haversineDistance}
 
 
 /**
@@ -48,15 +48,20 @@ object Visualization2 {
   ): Image = {
 
     def gridTileTemperature: (Int, Int) => Double = (xCol, yRow) => {
-        val loc = zoomedLocation(xCol, yRow, zoom, x, y)
-        val d00 = grid(loc.lat.floor.toInt, loc.lon.floor.toInt)
-        val d01 = grid(loc.lat.floor.toInt, loc.lon.ceil.toInt)
-        val d10 = grid(loc.lat.ceil.toInt, loc.lon.floor.toInt)
-        val d11 = grid(loc.lat.ceil.toInt, loc.lon.ceil.toInt)
-        val dx = loc.lon - loc.lon.floor
-        val dy = loc.lat - loc.lat.floor
-        bilinearInterpolation(dx, dy, d00, d01, d10, d11)
-      }
+      val loc = zoomedLocation(xCol, yRow, zoom, x, y)
+      val d00 = grid(loc.lat.ceil.toInt, loc.lon.floor.toInt)
+      val d01 = grid(loc.lat.ceil.toInt, loc.lon.ceil.toInt)
+      val d10 = grid(loc.lat.floor.toInt, loc.lon.floor.toInt)
+      val d11 = grid(loc.lat.floor.toInt, loc.lon.ceil.toInt)
+
+      val tl = Location(loc.lat.ceil, loc.lon.floor)
+      val tr = Location(loc.lat.ceil, loc.lon.ceil)
+      val bl = Location(loc.lat.floor, loc.lon.floor)
+
+      val dx = haversineDistance(Location(loc.lat.ceil, loc.lon), tl) / haversineDistance(tl, tr)
+      val dy = haversineDistance(Location(loc.lat, loc.lon.floor), tl) / haversineDistance(tl, bl)
+      bilinearInterpolation(dx, dy, d00, d01, d10, d11)
+    }
 
     val canvas = Image(256, 256)
     val alpha = 127
