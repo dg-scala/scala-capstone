@@ -1,7 +1,7 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
-import observatory.Interaction.tileLocation
+import observatory.Interaction.zoomedLocation
 import observatory.Visualization.visualizeImage
 
 
@@ -46,16 +46,9 @@ object Visualization2 {
     x: Int,
     y: Int
   ): Image = {
-    
-    /**
-      * @param xCol Column coordinate of the pixel
-      * @param yRow Row coordinate of the pixel
-      * @return The `Location` of a pixel in a tile defined by `x`, `y` and `zoom`
-      */
-    def zoomedLocation(xCol: Int, yRow: Int): Location = tileLocation(zoom + 8, x * 256 + xCol, y * 256 + yRow)
 
     def gridTileTemperature: (Int, Int) => Double = (xCol, yRow) => {
-        val loc = zoomedLocation(xCol, yRow)
+        val loc = zoomedLocation(xCol, yRow, zoom, x, y)
         val d00 = grid(loc.lat.floor.toInt, loc.lon.floor.toInt)
         val d01 = grid(loc.lat.floor.toInt, loc.lon.ceil.toInt)
         val d10 = grid(loc.lat.ceil.toInt, loc.lon.floor.toInt)

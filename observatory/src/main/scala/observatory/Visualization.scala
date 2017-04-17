@@ -83,7 +83,9 @@ object Visualization {
   def visualize(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)]): Image = {
     val canvas = Image(360, 180)
     val alpha: Int = 255
-    visualizeImage(canvas, colors, alpha)((x, y) => predictTemperature(temperatures, coordinatesToLocation(x, y)))
+    visualizeImage(canvas, colors, alpha)((x, y) => {
+      predictTemperature(temperatures, coordinatesToLocation(x, y))
+    })
     canvas
   }
 

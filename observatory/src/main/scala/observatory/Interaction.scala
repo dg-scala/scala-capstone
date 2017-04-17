@@ -31,19 +31,24 @@ object Interaction {
     * @return A 256×256 image showing the contents of the tile defined by `x`, `y` and `zoom`
     */
   def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
-
-    /**
-      *  @param xCol  Column coordinate of the pixel
-      *  @param yRow  Row coordinate of the pixel
-      *  @return The `Location` of a pixel in a tile defined by `x`, `y` and `zoom`
-      */
-    def zoomedLocation(xCol: Int, yRow: Int): Location = tileLocation(zoom + 8, x * 256 + xCol, y * 256 + yRow)
-
     val canvas = Image(256, 256)
     val alpha = 127
-    visualizeImage(canvas, colors, alpha)((xCol, yRow) => predictTemperature(temperatures, zoomedLocation(xCol, yRow)))
+    visualizeImage(canvas, colors, alpha)((xCol, yRow) => {
+      predictTemperature(temperatures, zoomedLocation(xCol, yRow, zoom, x, y))
+    })
     canvas
   }
+
+  /**
+    * @param xCol  Column coordinate of the pixel
+    * @param yRow  Row coordinate of the pixel
+    * @param zoom  Tile zoom
+    * @param xTile Tile X coordinate
+    * @param yTile Tile Y coordinate
+    * @return The `Location` of a pixel in a tile defined by `x`, `y` and `zoom`
+    */
+  def zoomedLocation(xCol: Int, yRow: Int, zoom: Int, xTile: Int, yTile: Int): Location =
+    tileLocation(zoom + 8, xTile * 256 + xCol, yTile * 256 + yRow)
 
   /**
     * Generates all the tiles for zoom levels 0 to 3 (included), for all the given years.
