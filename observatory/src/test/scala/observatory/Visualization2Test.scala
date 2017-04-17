@@ -21,4 +21,12 @@ class Visualization2Test extends FunSuite with Checkers {
     assert(bilinearInterpolation(1, 1, d00, d01, d10, d11) == d11)
   }
 
+  test("visualiseGrid should generate correct image") {
+    val colors = List(
+      (5.0,Color(255,0,0)),
+      (30.0,Color(0,0,255))
+    )
+    val (zoom, x, y) = (0, 0, 0)
+
+  }
 }

@@ -2,6 +2,7 @@ package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
 import scala.math._
+import Visualization._
 
 /**
   * 3rd milestone: interactive visualization
@@ -30,10 +31,6 @@ object Interaction {
     * @return A 256×256 image showing the contents of the tile defined by `x`, `y` and `zoom`
     */
   def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
-    import Visualization._
-
-    val canvas = Image(256, 256)
-    val alpha = 127
 
     /**
       *  @param xCol  Column coordinate of the pixel
@@ -42,7 +39,9 @@ object Interaction {
       */
     def zoomedLocation(xCol: Int, yRow: Int): Location = tileLocation(zoom + 8, x * 256 + xCol, y * 256 + yRow)
 
-    visualizeImage(canvas, temperatures, colors, alpha)(zoomedLocation)
+    val canvas = Image(256, 256)
+    val alpha = 127
+    visualizeImage(canvas, colors, alpha)((xCol, yRow) => predictTemperature(temperatures, zoomedLocation(xCol, yRow)))
     canvas
   }
 

@@ -83,15 +83,14 @@ object Visualization {
   def visualize(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)]): Image = {
     val canvas = Image(360, 180)
     val alpha: Int = 255
-    visualizeImage(canvas, temperatures, colors, alpha)(coordinatesToLocation)
+    visualizeImage(canvas, colors, alpha)((x, y) => predictTemperature(temperatures, coordinatesToLocation(x, y)))
     canvas
   }
 
-  def visualizeImage(canvas: Image, temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], alpha: Int)
-    (xy2Location: (Int, Int) => Location): Unit = {
+  def visualizeImage(canvas: Image, colors: Iterable[(Double, Color)], alpha: Int)(estimateTemperature: (Int, Int) => Double): Unit = {
     canvas.points.par.foreach((xy) => {
       val (x, y) = (xy._1, xy._2)
-      val temp = predictTemperature(temperatures, xy2Location(x, y))
+      val temp = estimateTemperature(x, y)
       val xyColor = interpolateColor(colors, temp)
       canvas.setPixel(x, y, Pixel(xyColor.red, xyColor.green, xyColor.blue, alpha))
     })

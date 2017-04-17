@@ -2,9 +2,8 @@ package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
 import observatory.Interaction.tileLocation
-import observatory.Visualization.interpolateColor
+import observatory.Visualization.visualizeImage
 
-import scala.math._
 
 /**
   * 5th milestone: value-added information visualization
@@ -47,7 +46,7 @@ object Visualization2 {
     x: Int,
     y: Int
   ): Image = {
-
+    
     /**
       * @param xCol Column coordinate of the pixel
       * @param yRow Row coordinate of the pixel
@@ -57,10 +56,10 @@ object Visualization2 {
 
     def gridTileTemperature: (Int, Int) => Double = (xCol, yRow) => {
         val loc = zoomedLocation(xCol, yRow)
-        val d00 = grid(loc.lat.floor, loc.lon.floor)
-        val d01 = grid(loc.lat.floor, loc.lon.ceil)
-        val d10 = grid(loc.lat.ceil, loc.lon.floor)
-        val d11 = grid(loc.lat.ceil, loc.lon.ceil)
+        val d00 = grid(loc.lat.floor.toInt, loc.lon.floor.toInt)
+        val d01 = grid(loc.lat.floor.toInt, loc.lon.ceil.toInt)
+        val d10 = grid(loc.lat.ceil.toInt, loc.lon.floor.toInt)
+        val d11 = grid(loc.lat.ceil.toInt, loc.lon.ceil.toInt)
         val dx = loc.lon - loc.lon.floor
         val dy = loc.lat - loc.lat.floor
         bilinearInterpolation(dx, dy, d00, d01, d10, d11)
@@ -68,13 +67,7 @@ object Visualization2 {
 
     val canvas = Image(256, 256)
     val alpha = 127
-
-    canvas.points.par.foreach((xy) => {
-      val (xCol, yRow) = (xy._1, xy._2)
-      val estTemperature = gridTileTemperature(xCol, yRow)
-      val xyColor = interpolateColor(colors, estTemperature)
-      canvas.setPixel(x, y, Pixel(xyColor.red, xyColor.green, xyColor.blue, alpha))
-    })
+    visualizeImage(canvas, colors, alpha)(gridTileTemperature)
     canvas
   }
 
