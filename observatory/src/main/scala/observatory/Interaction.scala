@@ -67,10 +67,13 @@ object Interaction {
       val data = yd._2
       for {
         zoom <- 0 to 3
-        x <- 0 until pow(2, zoom).toInt
-        y <- 0 until pow(2, zoom).toInt
       } yield {
-        generateImage(year, zoom, x, y, data)
+        val tileCoordinates = for {
+          x <- 0 until pow(2, zoom).toInt
+          y <- 0 until pow(2, zoom).toInt
+        } yield (x, y)
+
+        tileCoordinates.par.foreach((xy) => generateImage(year, zoom, xy._1, xy._2, data))
       }
     })
   }
