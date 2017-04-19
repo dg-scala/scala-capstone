@@ -8,21 +8,33 @@ object Main extends App {
   type Temperatures = Iterable[(Location, Double)]
   type Colors = Iterable[(Double, Color)]
   type Data = (Int) => (Temperatures, Colors)
+  val yearTemps = scala.collection.mutable.Map.empty[Int, Temperatures]
 
   val annualTemperatures: (Colors) => Iterable[(Int, Data)] =
     (cols) => {
       (1975 to 2015).foldRight(Stream.empty[(Int, Data)])((year, stream) => {
         val data =
-          (yr: Int) => (locationYearlyAverageRecords(locateTemperatures(yr, "/stations.csv", s"/${yr}.csv")), cols)
+          (yr: Int) => {
+            (yearTemps.get(yr) match {
+              case None =>
+                val temps: Temperatures = locationYearlyAverageRecords(locateTemperatures(yr, "/stations.csv", s"/$yr.csv"))
+                yearTemps.update(yr, temps)
+                temps
+
+              case Some(x) => x
+            }, cols)
+          }
 
         (year, data) #:: stream
       })
     }
 
   def generateImage(year: Int, zoom: Int, x: Int, y: Int, data: Data): Unit = {
-    val (temperatures, colors) = data(year)
-    val img = tile(temperatures, colors, zoom, x, y)
-    img.output(relativeFile(s"target/temperatures/$year/$zoom/${x}-${y}.png"))
+    if (zoom == 3) {
+      val (temperatures, colors) = data(year)
+      val img = tile(temperatures, colors, zoom, x, y)
+      img.output(relativeFile(s"target/temperatures/$year/$zoom/${x}-${y}.png"))
+    }
   }
 
   def imagine(): Unit = {
@@ -41,6 +53,6 @@ object Main extends App {
     generateTiles[Data](yearlyData, generateImage)
   }
 
-//  imagine()
+  imagine()
 
 }
