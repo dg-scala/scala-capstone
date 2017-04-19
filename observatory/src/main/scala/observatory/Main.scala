@@ -1,19 +1,29 @@
 package observatory
 
-import akka.actor.Terminated
 import observatory.Extraction.{locateTemperatures, locationYearlyAverageRecords}
-import observatory.Visualization.visualize
-import ExtractionSQL._
-
-import scala.concurrent.Future
+import observatory.Interaction.{generateTiles, tile}
 
 object Main extends App {
 
-  def sqlise(): Unit = {
-    locationYearlyAverageRecordsSQL(1975, "/stations.csv", "/1975.csv")
-  }
+  type Temperatures = Iterable[(Location, Double)]
+  type Colors = Iterable[(Double, Color)]
+  type Data = (Int) => (Temperatures, Colors)
 
-//  sqlise()
+  val annualTemperatures: (Colors) => Iterable[(Int, Data)] =
+    (cols) => {
+      (1975 to 2015).foldRight(Stream.empty[(Int, Data)])((year, stream) => {
+        val data =
+          (yr: Int) => (locationYearlyAverageRecords(locateTemperatures(yr, "/stations.csv", s"/${yr}.csv")), cols)
+
+        (year, data) #:: stream
+      })
+    }
+
+  def generateImage(year: Int, zoom: Int, x: Int, y: Int, data: Data): Unit = {
+    val (temperatures, colors) = data(year)
+    val img = tile(temperatures, colors, zoom, x, y)
+    img.output(relativeFile(s"target/temperatures/$year/$zoom/${x}-${y}.png"))
+  }
 
   def imagine(): Unit = {
     val tempColors = Seq(
@@ -27,48 +37,10 @@ object Main extends App {
       (-60.0, Color(0, 0, 0))
     )
 
-    val img = visualize(locationYearlyAverageRecords(locateTemperatures(1975, "/stations.csv", "/1975.csv")), tempColors)
-    img.output(homeFile("Desktop/imagine1975.png"))
+    val yearlyData = annualTemperatures(tempColors)
+    generateTiles[Data](yearlyData, generateImage)
   }
 
 //  imagine()
-
-//  simulatePlayground()
-
-  def simulatePlayground(): Future[Terminated] = {
-    import akka.stream._
-    import akka.stream.scaladsl._
-
-    import akka.{NotUsed, Done}
-    import akka.actor.ActorSystem
-    import akka.util.ByteString
-    import scala.concurrent._
-    import scala.concurrent.duration._
-    import java.nio.file.Paths
-
-    implicit val system = ActorSystem("QuickStart")
-    implicit val materializer = ActorMaterializer()
-
-    val source: Source[Int, NotUsed] = Source(1 to 100)
-        source.runForeach(i => println(i))(materializer)
-    val factorials = source.scan(BigInt(1))((acc, next) => acc * next)
-
-    val result: Future[IOResult] =
-      factorials
-        .map(num => ByteString(s"$num\n"))
-        .runWith(FileIO.toPath(Paths.get("factorials.txt")))
-
-    Await.result(result, 5.seconds)
-
-    def chrottle: Future[Done] =
-      factorials
-        .zipWith(source)((num, idx) => s"$idx! = $num")
-        .throttle(1, 100.millis, 1, ThrottleMode.shaping)
-        .runForeach(println)
-
-    Await.result(chrottle, 11.seconds)
-
-    system.terminate()
-  }
 
 }
