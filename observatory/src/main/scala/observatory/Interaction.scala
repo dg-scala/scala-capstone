@@ -73,7 +73,8 @@ object Interaction {
           y <- 0 until pow(2, zoom).toInt
         } yield (x, y)
 
-        tileCoordinates.par.foreach((xy) => generateImage(year, zoom, xy._1, xy._2, data))
+        generateImage(year, zoom, 0, 0, data) // first one to calculate year temperatures
+        tileCoordinates.drop(1).par.foreach((xy) => generateImage(year, zoom, xy._1, xy._2, data))
       }
     })
   }

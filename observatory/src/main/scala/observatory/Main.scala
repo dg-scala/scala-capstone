@@ -7,7 +7,8 @@ object Main extends App {
 
   type Temperatures = Iterable[(Location, Double)]
   type Colors = Iterable[(Double, Color)]
-  type Data = (Int) => (=> Temperatures, Colors)
+  type Data = (Int) => (Temperatures, Colors)
+
   val yearTemps = scala.collection.mutable.Map.empty[Int, Temperatures]
 
   val annualTemperatures: (Colors) => Iterable[(Int, Data)] =
