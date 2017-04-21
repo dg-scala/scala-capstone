@@ -1,8 +1,8 @@
 package observatory
 
-import com.sksamuel.scrimage.{Image, Pixel}
+import com.sksamuel.scrimage.Image
 import observatory.Interaction.zoomedLocation
-import observatory.Visualization.{visualizeImage, haversineDistance}
+import observatory.Visualization.visualizeImage
 
 
 /**
@@ -21,13 +21,13 @@ object Visualization2 {
     *         See https://en.wikipedia.org/wiki/Bilinear_interpolation#Unit_Square
     */
   def bilinearInterpolation(
-    x: Double,
-    y: Double,
-    d00: Double,
-    d01: Double,
-    d10: Double,
-    d11: Double
-  ): Double = {
+                             x: Double,
+                             y: Double,
+                             d00: Double,
+                             d01: Double,
+                             d10: Double,
+                             d11: Double
+                           ): Double = {
     d00 * (1 - x) * (1 - y) + d10 * x * (1 - y) + d01 * (1 - x) * y + d11 * x * y
   }
 
@@ -40,12 +40,12 @@ object Visualization2 {
     * @return The image of the tile at (x, y, zoom) showing the grid using the given color scale
     */
   def visualizeGrid(
-    grid: (Int, Int) => Double,
-    colors: Iterable[(Double, Color)],
-    zoom: Int,
-    x: Int,
-    y: Int
-  ): Image = {
+                     grid: (Int, Int) => Double,
+                     colors: Iterable[(Double, Color)],
+                     zoom: Int,
+                     x: Int,
+                     y: Int
+                   ): Image = {
 
     def gridTileTemperature: (Int, Int) => Double = (xCol, yRow) => {
       val loc = zoomedLocation(xCol, yRow, zoom, x, y)

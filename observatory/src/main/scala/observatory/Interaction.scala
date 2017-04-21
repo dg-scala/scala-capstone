@@ -22,6 +22,28 @@ object Interaction {
     Location(lat, lon)
   }
 
+  def dgAtan2(y: Double, x: Double): Double = {
+    var t3 = abs(x)
+    var t1 = abs(y)
+    var t0 = max(t3, t1)
+    t1 = min(t3, t1)
+    t3 = 1.0 / t0
+    t3 = t1 * t3
+
+    val t4 = t3 * t3
+    t0 = -0.013480470
+    t0 = t0 * t4 + 0.057477314
+    t0 = t0 * t4 - 0.121239071
+    t0 = t0 * t4 + 0.195635925
+    t0 = t0 * t4 - 0.332994597
+    t0 = t0 * t4 + 0.999995630
+    t3 = t0 * t3
+
+    t3 = if (abs(y) > abs(x)) Pi * 0.5 - t3 else t3
+    t3 = if (x < 0) Pi - t3 else t3
+    if (y < 0) -t3 else t3
+  }
+
   /**
     * @param temperatures Known temperatures
     * @param colors       Color scale
@@ -59,9 +81,9 @@ object Interaction {
     *                      y coordinates of the tile and the data to build the image from
     */
   def generateTiles[Data](
-    yearlyData: Iterable[(Int, Data)],
-    generateImage: (Int, Int, Int, Int, Data) => Unit
-  ): Unit = {
+                           yearlyData: Iterable[(Int, Data)],
+                           generateImage: (Int, Int, Int, Int, Data) => Unit
+                         ): Unit = {
     yearlyData.foreach((yd) => {
       val year = yd._1
       val data = yd._2
@@ -75,6 +97,7 @@ object Interaction {
 
         generateImage(year, zoom, 0, 0, data) // first one to calculate year temperatures
         tileCoordinates.drop(1).par.foreach((xy) => generateImage(year, zoom, xy._1, xy._2, data))
+//        tileCoordinates.foreach((xy) => generateImage(year, zoom, xy._1, xy._2, data))
       }
     })
   }

@@ -23,7 +23,7 @@ object Visualization {
       temperatures.foldLeft((0.0, 0.0, 9999.9))((acc, loctemp) => {
         val (l, t) = (loctemp._1, loctemp._2)
         val (n, d, e) = (acc._1, acc._2, acc._3)
-        val distance = haversineDistance(l, location)
+        val distance = transformedHaversineDistance(l, location)
 
         if (e != 9999.9) acc
         else if (distance == 0) (n, d, t) // known temperature
@@ -113,6 +113,17 @@ object Visualization {
     val dLon = (lon2 - lon1).toRadians
 
     val a = pow(sin(dLat / 2), 2) + pow(sin(dLon / 2), 2) * cos(lat1.toRadians) * cos(lat2.toRadians)
+    val c = 2 * arcsin(sqrt(a))
+    earthRadius * c
+  }
+
+  def transformedHaversineDistance(l1: Location, l2: Location): Double = {
+    val cosDlat = l1.cosLat * l2.cosLat + l1.sinLat * l2.sinLat
+    val cosDlon = l1.cosLon * l2.cosLon + l1.sinLon * l2.sinLon
+    val sinHalfDlatSq = (1 - cosDlat) / 2
+    val sinHalfDlonSq = (1 - cosDlon) / 2
+
+    val a = sinHalfDlatSq + sinHalfDlonSq * l1.cosLat * l2.cosLat
     val c = 2 * arcsin(sqrt(a))
     earthRadius * c
   }
