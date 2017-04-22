@@ -1,7 +1,10 @@
 package observatory
 
+import com.sksamuel.scrimage.Image
 import observatory.Extraction.{locateTemperatures, locationYearlyAverageRecords}
 import observatory.Interaction.{generateTiles, tile}
+
+import scala.math._
 
 object Main extends App {
 
@@ -56,4 +59,21 @@ object Main extends App {
 
   imagine()
 
+  def produceLowerZooms(year: Int): Unit = {
+    for {
+      zoom <- 2 to 0 by -1
+      x <- 0 until pow(2, zoom).toInt
+      y <- 0 until pow(2, zoom).toInt
+    } yield {
+      val canvas = Image(256, 256)
+      for {
+        xPrev <- x to (x + 1)
+        yPrev <- y to (y + 1)
+      } yield {
+        val image = Image.fromFile(relativeFile(s"target/temperatures/$year/${zoom + 1}/${xPrev}-${yPrev}.png"))
+        canvas.setPixel(x, y, image.pixel(xPrev, yPrev))
+      }
+      canvas.output(relativeFile(s"target/temperatures/$year/$zoom/${x}-${y}.png"))
+    }
+  }
 }
