@@ -23,6 +23,7 @@ object Visualization {
       temperatures.foldLeft((0.0, 0.0, 9999.9))((acc, loctemp) => {
         val (l, t) = (loctemp._1, loctemp._2)
         val (n, d, e) = (acc._1, acc._2, acc._3)
+//        val distance = haversineDistance(l, location)
         val distance = transformedHaversineDistance(l, location)
 
         if (e != 9999.9) acc

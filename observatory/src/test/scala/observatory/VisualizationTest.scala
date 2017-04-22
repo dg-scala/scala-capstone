@@ -38,7 +38,7 @@ class VisualizationTest extends FunSuite with Checkers {
     val expected: Double = 1688.97
     val locLondon = Location(51.5000, -0.1167)
     val locBelgrade = Location(44.8186, 20.4681)
-    val actual = transformedHaversineDistance(locLondon, locBelgrade)
+    val actual = haversineDistance(locLondon, locBelgrade)
     assert(approxEq(actual, expected, tolerance),
       s"arial distance betwen LON and BEG should be accurate to witin 10.0km, actual=$actual expected=$expected")
   }
@@ -47,7 +47,7 @@ class VisualizationTest extends FunSuite with Checkers {
     val expected: Double = 18324.61
     val locLondon = Location(51.5000, -0.1167)
     val locAuckland = Location(-36.8667, 174.7667)
-    val actual = transformedHaversineDistance(locLondon, locAuckland)
+    val actual = haversineDistance(locLondon, locAuckland)
     assert(approxEq(actual, expected, tolerance),
       s"arial distance betwen LON and ACK should be accurate to witin 10.0km, actual=$actual expected=$expected")
   }
@@ -56,7 +56,7 @@ class VisualizationTest extends FunSuite with Checkers {
     val expected: Double = 6484.05
     val locParis = Location(48.8534, 2.3488)
     val locNairobi = Location(-1.28333, 36.8167)
-    val actual = transformedHaversineDistance(locParis, locNairobi)
+    val actual = haversineDistance(locParis, locNairobi)
     assert(approxEq(actual, expected, tolerance),
       s"arial distance betwen PAR and NBO should be accurate to witin 10.0km, actual=$actual expected=$expected")
   }

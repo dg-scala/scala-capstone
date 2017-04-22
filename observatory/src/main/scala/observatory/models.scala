@@ -1,5 +1,6 @@
 package observatory
 
+//case class Location(lat: Double, lon: Double)
 case class Location(lat: Double, lon: Double) {
   import scala.math._
   private val latRad = lat.toRadians

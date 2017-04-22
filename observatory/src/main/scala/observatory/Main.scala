@@ -13,7 +13,7 @@ object Main extends App {
 
   val annualTemperatures: (Colors) => Iterable[(Int, Data)] =
     (cols) => {
-      (1977 to 2015).foldRight(Stream.empty[(Int, Data)])((year, stream) => {
+      (2000 to 2015).foldRight(Stream.empty[(Int, Data)])((year, stream) => {
         val data =
           (yr: Int) => {
             (yearTemps.get(yr) match {
