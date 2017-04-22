@@ -41,7 +41,7 @@ object Interaction2 {
     * @return A signal containing the year bounds corresponding to the selected layer
     */
   def yearBounds(selectedLayer: Signal[Layer]): Signal[Range] = {
-    ???
+    Signal(selectedLayer().bounds)
   }
 
   /**
@@ -53,7 +53,12 @@ object Interaction2 {
     *         in the `selectedLayer` bounds.
     */
   def yearSelection(selectedLayer: Signal[Layer], sliderValue: Signal[Int]): Signal[Int] = {
-    ???
+    val min = Signal(selectedLayer().bounds.head)
+    val max = Signal(selectedLayer().bounds.last)
+
+    if (sliderValue() < min()) Signal(min())
+    else if (sliderValue() > max()) Signal(max())
+    else Signal(sliderValue())
   }
 
   /**
@@ -62,7 +67,7 @@ object Interaction2 {
     * @return The URL pattern to retrieve tiles
     */
   def layerUrlPattern(selectedLayer: Signal[Layer], selectedYear: Signal[Int]): Signal[String] = {
-    ???
+    Signal(s"target/${selectedLayer().layerName.id}/${selectedLayer()}")
   }
 
   /**
@@ -71,7 +76,7 @@ object Interaction2 {
     * @return The caption to show
     */
   def caption(selectedLayer: Signal[Layer], selectedYear: Signal[Int]): Signal[String] = {
-    ???
+    Signal(s"${selectedLayer().layerName.id} (${selectedLayer()})")
   }
 
 }
