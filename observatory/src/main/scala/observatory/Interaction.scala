@@ -23,27 +23,27 @@ object Interaction {
     Location(lat, lon)
   }
 
-  def dgAtan2(y: Double, x: Double): Double = {
-    var t3 = abs(x)
-    var t1 = abs(y)
-    var t0 = max(t3, t1)
-    t1 = min(t3, t1)
-    t3 = 1.0 / t0
-    t3 = t1 * t3
-
-    val t4 = t3 * t3
-    t0 = -0.013480470
-    t0 = t0 * t4 + 0.057477314
-    t0 = t0 * t4 - 0.121239071
-    t0 = t0 * t4 + 0.195635925
-    t0 = t0 * t4 - 0.332994597
-    t0 = t0 * t4 + 0.999995630
-    t3 = t0 * t3
-
-    t3 = if (abs(y) > abs(x)) Pi * 0.5 - t3 else t3
-    t3 = if (x < 0) Pi - t3 else t3
-    if (y < 0) -t3 else t3
-  }
+//  def dgAtan2(y: Double, x: Double): Double = {
+//    var t3 = abs(x)
+//    var t1 = abs(y)
+//    var t0 = max(t3, t1)
+//    t1 = min(t3, t1)
+//    t3 = 1.0 / t0
+//    t3 = t1 * t3
+//
+//    val t4 = t3 * t3
+//    t0 = -0.013480470
+//    t0 = t0 * t4 + 0.057477314
+//    t0 = t0 * t4 - 0.121239071
+//    t0 = t0 * t4 + 0.195635925
+//    t0 = t0 * t4 - 0.332994597
+//    t0 = t0 * t4 + 0.999995630
+//    t3 = t0 * t3
+//
+//    t3 = if (abs(y) > abs(x)) Pi * 0.5 - t3 else t3
+//    t3 = if (x < 0) Pi - t3 else t3
+//    if (y < 0) -t3 else t3
+//  }
 
   /**
     * @param temperatures Known temperatures

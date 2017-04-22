@@ -35,14 +35,14 @@ object Extraction {
 
     def sequenceFromStream(is: InputStream): Seq[String] = scala.io.Source.fromInputStream(is).getLines().toSeq
 
-    val stationsStream = getClass.getResourceAsStream(stationsFile)
-    val temperaturesStream = getClass.getResourceAsStream(temperaturesFile)
+    val stationsStream = Option(getClass.getResourceAsStream(stationsFile))
+    val temperaturesStream = Option(getClass.getResourceAsStream(temperaturesFile))
 
-    if (stationsStream == null || temperaturesStream == null)
+    if (stationsStream.isEmpty || temperaturesStream.isEmpty)
       Iterable.empty[(LocalDate, Location, Double)]
     else {
-      val statRdd = stations(sc.parallelize(sequenceFromStream(stationsStream)))
-      val tempRdd = temperatures(sc.parallelize(sequenceFromStream(temperaturesStream)))
+      val statRdd = stations(sc.parallelize(sequenceFromStream(stationsStream.get)))
+      val tempRdd = temperatures(sc.parallelize(sequenceFromStream(temperaturesStream.get)))
 
       val resultsRdd =
         statRdd.join(tempRdd)

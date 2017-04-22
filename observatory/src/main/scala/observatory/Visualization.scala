@@ -114,7 +114,7 @@ object Visualization {
     val dLon = (lon2 - lon1).toRadians
 
     val a = pow(sin(dLat / 2), 2) + pow(sin(dLon / 2), 2) * cos(lat1.toRadians) * cos(lat2.toRadians)
-    val c = 2 * arcsin(sqrt(a))
+    val c = 2 * asin(sqrt(a))
     earthRadius * c
   }
 
@@ -129,19 +129,19 @@ object Visualization {
 //    earthRadius * c
 //  }
 
-  def arcsin(angle: Double): Double = {
-    val negate = if (angle < 0.0) 1.0 else 0.0
-    val x = abs(angle)
-    var ret = -0.0187293
-    ret *= x
-    ret += 0.0742610
-    ret *= x
-    ret -= 0.2121144
-    ret *= x
-    ret += 1.5707288
-    ret = Pi * 0.5 - sqrt(1.0 - x) * ret
-    ret - 2 * negate * ret
-  }
+//  def arcsin(angle: Double): Double = {
+//    val negate = if (angle < 0.0) 1.0 else 0.0
+//    val x = abs(angle)
+//    var ret = -0.0187293
+//    ret *= x
+//    ret += 0.0742610
+//    ret *= x
+//    ret -= 0.2121144
+//    ret *= x
+//    ret += 1.5707288
+//    ret = Pi * 0.5 - sqrt(1.0 - x) * ret
+//    ret - 2 * negate * ret
+//  }
 
   def interpolate2(before: (Double, Color), after: (Double, Color), value: Double): Color = {
     def interpolateComponent(y0: Int, y1: Int): Int =

@@ -9,7 +9,7 @@ object Main extends App {
   type Colors = Iterable[(Double, Color)]
   type Data = (Int) => (Temperatures, Colors)
 
-  val yearTemps = scala.collection.mutable.Map.empty[Int, Temperatures]
+  var yearTemps = Map.empty[Int, Temperatures]
 
   val annualTemperatures: (Colors) => Iterable[(Int, Data)] =
     (cols) => {
@@ -19,7 +19,7 @@ object Main extends App {
             (yearTemps.get(yr) match {
               case None =>
                 val temps: Temperatures = locationYearlyAverageRecords(locateTemperatures(yr, "/stations.csv", s"/$yr.csv"))
-                yearTemps.update(yr, temps)
+                yearTemps = yearTemps.updated(yr, temps)
                 temps
 
               case Some(x) => x
