@@ -57,7 +57,7 @@ object Main extends App {
     generateTiles[Data](yearlyData, generateImage)
   }
 
-  imagine()
+//  imagine()
 
   def produceLowerZooms(year: Int): Unit = {
     for {
@@ -67,13 +67,30 @@ object Main extends App {
     } yield {
       val canvas = Image(256, 256)
       for {
-        xPrev <- x to (x + 1)
-        yPrev <- y to (y + 1)
+        xPrev <- x * 2 to (x * 2 + 1)
+        yPrev <- y * 2 to (y * 2 + 1)
       } yield {
         val image = Image.fromFile(relativeFile(s"target/temperatures/$year/${zoom + 1}/${xPrev}-${yPrev}.png"))
-        canvas.setPixel(x, y, image.pixel(xPrev, yPrev))
+        for {
+          col <- 0 until 256 by 2
+          row <- 0 until 256 by 2
+        } yield {
+          val x0 = xPrev - 2 * x
+          val y0 = yPrev - 2 * y
+          val newCol = x0 * 128 + col / 2
+          val newRow = y0 * 128 + row / 2
+          assert((0 until 256).indexOf(newCol) != -1, s"newCol out of bounds $newCol, col is $col, x is $x, xPrev is $xPrev")
+          assert((0 until 256).indexOf(newRow) != -1, s"newRow out of bounds $newRow, row is $row, y is $y, yPrev is $yPrev")
+          canvas.setPixel(newCol, newRow, image.pixel(col, row))
+        }
       }
       canvas.output(relativeFile(s"target/temperatures/$year/$zoom/${x}-${y}.png"))
     }
+  }
+
+  for {
+    year <- 1975 to 2015
+  } yield {
+    produceLowerZooms(year)
   }
 }
