@@ -76,8 +76,10 @@ object Interaction2 {
     * @return The caption to show
     */
   def caption(selectedLayer: Signal[Layer], selectedYear: Signal[Int]): Signal[String] = {
-    Signal(s"${selectedLayer().layerName.id} (${selectedLayer()})")
+    Signal(s"${firstUpper(selectedLayer().layerName.id)} (${selectedYear()})")
   }
+
+  def firstUpper(s: String): String = s.substring(0, 1).toUpperCase + s.substring(1)
 
 }
 
